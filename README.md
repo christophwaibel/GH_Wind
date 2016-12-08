@@ -5,5 +5,4 @@ As a user, just get FastFluidSolverrr.dll and GHWind.gha and put both into your 
 
 Try out the *.gh and *.3dm files as examples.
 
-Inline-style: 
-![alt text](https://github.com/christophwaibel/GH_Wind/blob/master/slide0005_image017.gif "Logo Title Text 1")
+![alt text](https://github.com/christophwaibel/GH_Wind/blob/master/slide0005_image017.gif "Image from Rhino")
