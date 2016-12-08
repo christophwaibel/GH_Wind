@@ -6,10 +6,9 @@ using Grasshopper.Kernel;
 using Rhino.Geometry;
 using FastFluidSolverrr;
 using System.Threading.Tasks;
-
 namespace GHWind
 {
-    public class GHFFDSolver : GH_Component
+    public class GHFFDSolverWentao : GH_Component
     {
         //LEGACY_Form1 f;   //adding a form window
         //GH_Document doc;
@@ -30,9 +29,9 @@ namespace GHWind
         /// Subcategory the panel. If you use non-existing tab or panel names, 
         /// new tabs/panels will automatically be created.
         /// </summary>
-        public GHFFDSolver()
-            : base("FFD Solver", "FFD",
-            "Fast Fluid Dynamics Solver",
+        public GHFFDSolverWentao()
+            : base("FFD Wentao", "FFD wentao",
+            "Fast Fluid Dynamics Solver Wentao. with special wind inflow wentao domain.",
             "EnergyHubs", "Wind Simulation")
         {
         }
@@ -63,7 +62,7 @@ namespace GHWind
             pManager.AddBooleanParameter("Run?", "Run?", "Run the solver. (Loop via Grasshopper timer component)", GH_ParamAccess.item);
 
             //#7
-            pManager.AddBooleanParameter("Results?", "Results?", "Output Data Extractor class? E.g. for Cp calculation.", GH_ParamAccess.item);
+            pManager.AddBooleanParameter("Write Results?", "Results?", "Write Results for visualization in GH.", GH_ParamAccess.item);
             pManager[7].Optional = true;
 
             //#8
@@ -74,13 +73,18 @@ namespace GHWind
             pManager.AddBooleanParameter("Reset", "Reset", "Reset domain", GH_ParamAccess.item);
             pManager[9].Optional = true;
 
-            //#10
+            //#10  
+            pManager.AddNumberParameter("b", "b", "b , that is the length/width of the building", GH_ParamAccess.item);
+
+            //#11
+            pManager.AddPointParameter("Pb", "Pb", "Point in the middle of the building. Needed to know, where 0 is", GH_ParamAccess.item);
+
+            //#12
+            pManager.AddPointParameter("origin", "origin", "origin", GH_ParamAccess.item);
+
+            //#13
             pManager.AddNumberParameter("ν", "ν", "ν - kinematic viscosity", GH_ParamAccess.item);
-            pManager[10].Optional = true;
-
-            //#10  analysis surface for Cp
-            //pManager.AddMeshParameter("Mesh Cp", "Mesh Cp", "Mesh surfaces for calculating Cp - Wind pressure coefficients", GH_ParamAccess.list);
-
+            pManager[13].Optional = true;
         }
 
         /// <summary>
@@ -100,7 +104,14 @@ namespace GHWind
             //pManager.AddGenericParameter("Cp", "Cp", "Cp (wind pressure coefficients) for analysis surfaces.", GH_ParamAccess.list);
             pManager.AddGenericParameter("DE", "DE", "Data Extractor, containing omega and FFD classes", GH_ParamAccess.item);
 
-            // pManager.AddTextParameter("VTK path", "VTK path", "Output path of VTK results file", GH_ParamAccess.item);
+            //#5
+            pManager.AddGenericParameter("U", "U", "U in [m/s] at all x", GH_ParamAccess.tree);
+
+            //#6
+            pManager.AddGenericParameter("V", "V", "V in [m/s] at all x", GH_ParamAccess.tree);
+
+            //#5
+            pManager.AddGenericParameter("W", "W", "W in [m/s] at all x", GH_ParamAccess.tree);
         }
 
 
@@ -114,15 +125,6 @@ namespace GHWind
         /// to store data in output parameters.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            //// *********************************************************************************
-            ////grasshopper current document
-            //// *********************************************************************************
-            //Component = this;
-            //doc = Component.OnPingDocument();
-
-
-
-
 
             // *********************************************************************************
             // get info from grasshopper
@@ -136,7 +138,7 @@ namespace GHWind
             int Ny = Nxyz[1];
             int Nz = Nxyz[2];
 
-            
+
             List<double[]> geom = new List<double[]>();
             if (!DA.GetDataList(2, geom)) { return; };
 
@@ -168,10 +170,18 @@ namespace GHWind
 
             DA.GetData(9, ref resetFFD);
 
+            double b = 0;
+            if (!DA.GetData(10, ref b)) { return; };
+
+            Point3d Pb = new Point3d();
+            if (!DA.GetData(11, ref Pb)) { return; }
+
+            Point3d origin = new Point3d();
+            if (!DA.GetData(12, ref origin)) { return; }
+
 
             double nu = 1.511e-5;       // increase viscosity to impose turbulence. the higher velocity, the higher visc., 1e-3
-            DA.GetData(10, ref nu);
-
+            DA.GetData(13, ref nu);
 
             // *********************************************************************************
             //from Lukas 
@@ -202,7 +212,7 @@ namespace GHWind
             // Create FFD solver and domain
             if (ffd == null)
             {
-                omega = new WindInflow(Nx + 2, Ny + 2, Nz + 2, xyzsize[0], xyzsize[1], xyzsize[2], Vmet, terrain);
+                omega = new WindInflowWentao(Nx + 2, Ny + 2, Nz + 2, xyzsize[0], xyzsize[1], xyzsize[2]);
                 foreach (double[] geo in geom)
                 {
                     omega.add_obstacle(geo[0], geo[1], geo[2], geo[3], geo[4], geo[5]);
@@ -216,7 +226,7 @@ namespace GHWind
             //reset FFD solver and domain
             if (resetFFD)
             {
-                omega = new WindInflow(Nx + 2, Ny + 2, Nz + 2, xyzsize[0], xyzsize[1], xyzsize[2], Vmet, terrain);
+                omega = new WindInflowWentao(Nx + 2, Ny + 2, Nz + 2, xyzsize[0], xyzsize[1], xyzsize[2]);
                 foreach (double[] geo in geom)
                 {
                     omega.add_obstacle(geo[0], geo[1], geo[2], geo[3], geo[4], geo[5]);
@@ -235,37 +245,15 @@ namespace GHWind
 
 
 
-
-
-
-
-
-           
             //run solver. the solving-loop (new timestep) is executed in Grasshopper with a timer-component.
-            if(run) ffd.time_step(f_x, f_y, f_z);
+            if (run) ffd.time_step(f_x, f_y, f_z);
 
 
 
-            // *******************************************************************************************
-            // *******************************************************************************************
-            // TO DO:   fix this loop with
-            //   pp.export_data_vtk(String.Concat("lid_driven_cavity_", tstep, ".vtk"), Nx, Ny, Nz, tstep );
-            //bool run2 = (bool)Component.Params.Input[5].Sources[0].VolatileData;
-            //while (true)
-
-
-
-
-
-
-            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // I could move all this shit away, an only output de data extractor
 
             // *******************************************************************************************
             // *********************************     Output Results       ********************************
-            double[, ,] p = new double[Nx,Ny,Nz];
+            double[, ,] p = new double[Nx, Ny, Nz];
             double[, ,] vu = new double[Nx, Ny, Nz];
             double[, ,] vv = new double[Nx, Ny, Nz];
             double[, ,] vw = new double[Nx, Ny, Nz];
@@ -281,7 +269,7 @@ namespace GHWind
                 {
                     for (int k = 0; k < Nz; k++)
                     {
-                        if (omega.obstacle_cells[i+1, j+1, k+1] != 1)
+                        if (omega.obstacle_cells[i + 1, j + 1, k + 1] != 1)
                         {
                             p[i, j, k] = de.get_pressure(i * omega.hx + 0.5 * omega.hx, j * omega.hy + 0.5 * omega.hy, k * omega.hz + 0.5 * omega.hz);
                             double[] vel = de.get_velocity(i * omega.hx + 0.5 * omega.hx, j * omega.hy + 0.5 * omega.hy, k * omega.hz + 0.5 * omega.hz);
@@ -350,10 +338,10 @@ namespace GHWind
                 for (int j = 0; j < Ny + 1; j++)
                 {
                     pstag[i, j, Nz] = de.get_pressure(i * omega.hx, j * omega.hy, (Nz) * omega.hz);
-                    double [] vcen = de.get_velocity(i * omega.hx, j * omega.hy, (Nz ) * omega.hz);
-                    vustag[i, j, Nz ] = vcen[0];
-                    vvstag[i, j, Nz ] = vcen[1];
-                    vwstag[i, j, Nz ] = vcen[2];
+                    double[] vcen = de.get_velocity(i * omega.hx, j * omega.hy, (Nz) * omega.hz);
+                    vustag[i, j, Nz] = vcen[0];
+                    vvstag[i, j, Nz] = vcen[1];
+                    vwstag[i, j, Nz] = vcen[2];
                 }
             }
 
@@ -378,6 +366,40 @@ namespace GHWind
 
 
 
+            Grasshopper.DataTree<double> utree = new Grasshopper.DataTree<double>();
+            Grasshopper.DataTree<double> vtree = new Grasshopper.DataTree<double>();
+            Grasshopper.DataTree<double> wtree = new Grasshopper.DataTree<double>();
+
+            double [] xpos = new double[]{-0.75*b , -0.5*b, -0.25*b, 0, 0.5*b, 0.75*b, 1.25*b, 2*b, 3.25*b};
+            for (int i = 0; i < xpos.Length; i++)
+            {
+                xpos[i] = xpos[i] + Pb[0] - origin[0];
+            }
+
+            //(Ny+1) / 2
+            int branch = 0;
+            foreach (double xpo in xpos)
+            {
+                for (int k = 0; k < Nz + 1; k++)
+                {
+                    double[] vcen = de.get_velocity(xpo , (Ny / 2) * omega.hy + 0.5 * omega.hy, k * omega.hz);
+
+                    utree.Add(vcen[0], new Grasshopper.Kernel.Data.GH_Path(branch));
+                    vtree.Add(vcen[1], new Grasshopper.Kernel.Data.GH_Path(branch));
+                    wtree.Add(vcen[2], new Grasshopper.Kernel.Data.GH_Path(branch));
+                }
+                branch++;
+            }
+
+
+
+
+
+
+            DA.SetDataTree(5, utree);
+            DA.SetDataTree(6, vtree);
+            DA.SetDataTree(7, wtree);
+
             // *******************************************************************************************
             // *******************************      Output Cp values on Surfaces   ***********************
             //if (mshCp.Count > 0)
@@ -400,7 +422,7 @@ namespace GHWind
                 //        double cp = de.get_pressure(msh.Vertices[u].X, msh.Vertices[u].Y, msh.Vertices[u].Z);
                 //        Cps[u] = 1;
                 //    }
-                
+
                 //}
                 //DA.SetDataList(4, mshCp);
 
@@ -488,18 +510,16 @@ namespace GHWind
             {
                 // You can add image files to your project resources and access them like this:
                 //return Resources.IconForThisComponent;
-                return GHWind.Properties.Resources.solver;
+                return GHWind.Properties.Resources.wentao;
             }
         }
 
         /// <summary>
-        /// Each component must have a unique Guid to identify it. 
-        /// It is vital this Guid doesn't change otherwise old ghx files 
-        /// that use the old ID will partially fail during loading.
+        /// Gets the unique ID for this component. Do not change this ID after release.
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("{2f9d884f-31ed-4afd-921a-f407565448fa}"); }
+            get { return new Guid("{c7520803-3a3f-492a-8ab3-22c4a7b8ad1f}"); }
         }
     }
 }
