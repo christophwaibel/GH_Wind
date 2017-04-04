@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 using FastFluidSolverrr;
 
+/*
+ * Domains.cs
+ * Copyright 2017 Christoph Waibel <chwaibel@student.ethz.ch>
+ * Modified after WindInflow.cs; Lukas Bystricky <lb13f@my.fsu.edu>
+ *
+ * This work is licensed under the GNU GPL license version 3 or later.
+ */
+
 namespace GHWind
 {
     //could have many more domains here 
@@ -17,9 +25,7 @@ namespace GHWind
 
 
    
-  //WindInflow.cs
-  //Copyright 2016 Lukas Bystricky <lb13f@my.fsu.edu>
-  //This work is licensed under the GNU GPL license version 2 or later.
+
     /// <summary>
     /// Domain with an exponential wind profile on the inflow (x = 0), 
     /// 0 velocity on the ground (z = 0) and all other boundaries marked as outflow.

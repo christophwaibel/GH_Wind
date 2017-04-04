@@ -7,6 +7,13 @@ using Rhino.Geometry;
 using FastFluidSolverrr;
 using System.Threading.Tasks;
 
+/*
+ * GHFFDSolver.cs
+ * Copyright 2017 Christoph Waibel <chwaibel@student.ethz.ch>
+ * 
+ * This work is licensed under the GNU GPL license version 3.
+*/
+
 namespace GHWind
 {
     public class GHFFDSolver : GH_Component
@@ -261,7 +268,7 @@ namespace GHWind
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // I could move all this away, an only output de data extractor
+            // I could move all this shit away, an only output de data extractor
 
             // *******************************************************************************************
             // *********************************     Output Results       ********************************

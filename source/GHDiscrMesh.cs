@@ -4,6 +4,13 @@ using System.Collections.Generic;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 
+/*
+ * GHDiscrMesh.cs
+ * Copyright 2017 Christoph Waibel <chwaibel@student.ethz.ch>
+ * 
+ * This work is licensed under the GNU GPL license version 3.
+*/
+
 namespace GHWind
 {
     public class GHDiscrMesh : GH_Component
