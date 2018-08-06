@@ -59,8 +59,8 @@ namespace GHWind
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddLineParameter("draw lines", "draw lines", "draw coloured lines", GH_ParamAccess.item);
-            pManager.HideParameter(0);
+            pManager.AddLineParameter("draw lines", "draw lines", "draw coloured lines", GH_ParamAccess.list);
+            //pManager.HideParameter(0);
         }
 
         private readonly List<Line> _lines = new List<Line>();
@@ -217,9 +217,10 @@ namespace GHWind
                     }
                     break;
 
+                    
 
             }
-
+            DA.SetDataList(0, _lines);
 
             
           
