@@ -1,34 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2012 for Windows Desktop
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GHWind", "GHWind\GHWind.csproj", "{6A5ECB0D-E434-4E99-90AA-A8A1841CAECB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastFluidSolverrr", "FastFluidSolverrr\FastFluidSolverrr.csproj", "{2CF2D292-DFA6-4314-905D-421D6D725954}"
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GHWind", "GHWind\GHWind.csproj", "{7C0D5E1C-3421-4955-8444-C3581AA46C54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug32|Any CPU = Debug32|Any CPU
-		Debug64|Any CPU = Debug64|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6A5ECB0D-E434-4E99-90AA-A8A1841CAECB}.Debug|Any CPU.ActiveCfg = Debug64|Any CPU
-		{6A5ECB0D-E434-4E99-90AA-A8A1841CAECB}.Debug|Any CPU.Build.0 = Debug64|Any CPU
-		{6A5ECB0D-E434-4E99-90AA-A8A1841CAECB}.Debug32|Any CPU.ActiveCfg = Debug32|Any CPU
-		{6A5ECB0D-E434-4E99-90AA-A8A1841CAECB}.Debug32|Any CPU.Build.0 = Debug32|Any CPU
-		{6A5ECB0D-E434-4E99-90AA-A8A1841CAECB}.Debug64|Any CPU.ActiveCfg = Debug64|Any CPU
-		{6A5ECB0D-E434-4E99-90AA-A8A1841CAECB}.Debug64|Any CPU.Build.0 = Debug64|Any CPU
-		{6A5ECB0D-E434-4E99-90AA-A8A1841CAECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6A5ECB0D-E434-4E99-90AA-A8A1841CAECB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2CF2D292-DFA6-4314-905D-421D6D725954}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2CF2D292-DFA6-4314-905D-421D6D725954}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2CF2D292-DFA6-4314-905D-421D6D725954}.Debug32|Any CPU.ActiveCfg = Debug|Any CPU
-		{2CF2D292-DFA6-4314-905D-421D6D725954}.Debug32|Any CPU.Build.0 = Debug|Any CPU
-		{2CF2D292-DFA6-4314-905D-421D6D725954}.Debug64|Any CPU.ActiveCfg = Debug|Any CPU
-		{2CF2D292-DFA6-4314-905D-421D6D725954}.Debug64|Any CPU.Build.0 = Debug|Any CPU
-		{2CF2D292-DFA6-4314-905D-421D6D725954}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2CF2D292-DFA6-4314-905D-421D6D725954}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C0D5E1C-3421-4955-8444-C3581AA46C54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C0D5E1C-3421-4955-8444-C3581AA46C54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C0D5E1C-3421-4955-8444-C3581AA46C54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C0D5E1C-3421-4955-8444-C3581AA46C54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
