@@ -5,9 +5,9 @@ Please refer to this publication for citation: [Waibel et al. (2017)](https://ww
 
 <br><br>
 
-As a user, just get FastFluidSolverrr.dll and GHWind.gha and put both into your Rhino Grasshopper components folder.
+As a user, just get FastFluidSolverMT.dll and GHWind.gha and put both into your Rhino Grasshopper components folder.
 
-Try out the *.gh and *.3dm files as examples.
+Try out the *.gh and *.3dm files in the Tutorials folder as examples.
 
 <br><br>
 
