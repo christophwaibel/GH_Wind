@@ -20,12 +20,16 @@ namespace GHWind
 {
     public class GHFFDSolverV2 : GH_Component
     {
-        Domain omega;
-        FluidSolver ffd;
-        DataExtractor de;
+        private string filepath;
 
-        double t;
-        bool resetFFD;
+        private Domain omega;
+        private FluidSolver ffd;
+        private DataExtractor de;
+
+        private double t;
+        private bool resetFFD;
+
+
 
         /// <summary>
         /// Initializes a new instance of the GHFFDSolverV2 class.
@@ -115,6 +119,10 @@ namespace GHWind
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            // current filepath
+            filepath = Path.GetDirectoryName(this.OnPingDocument().FilePath);
+            string residualstxt = filepath + @"\\residual.txt";
+
             // *********************************************************************************
             // Inputs
             // *********************************************************************************
@@ -264,7 +272,7 @@ namespace GHWind
                 int counter = 0;
                 FluidSolver[] ffd_old = new FluidSolver[m];
 
-                File.AppendAllText(@"C:\\residuals.txt", "pmin; pmax; pavg; umin; umax; uavg; vmin; vmax; vavg; wmin; wmax; wavg;\n");
+                if (calcres) File.AppendAllText(residualstxt, "pmin; pmax; pavg; umin; umax; uavg; vmin; vmax; vavg; wmin; wmax; wavg;\n");
                 while (t < t_end)
                 {
                     Rhino.RhinoApp.WriteLine(Convert.ToString(t) + " of " + Convert.ToString(t_end));
@@ -298,7 +306,7 @@ namespace GHWind
                         FastFluidSolverMT.Utilities.calculate_residuals(w_t1, w_t2, out w_residuals);
                         Rhino.RhinoApp.WriteLine("w residuals: {0};{1};{2}", w_residuals[0], w_residuals[1], w_residuals[2]);
 
-                        File.AppendAllText(@"C:\\residuals.txt", Convert.ToString(p_residuals[0]) + ";" + Convert.ToString(p_residuals[1]) + ";" + Convert.ToString(p_residuals[2]) + ";" +
+                        File.AppendAllText(residualstxt, Convert.ToString(p_residuals[0]) + ";" + Convert.ToString(p_residuals[1]) + ";" + Convert.ToString(p_residuals[2]) + ";" +
                             Convert.ToString(u_residuals[0])+";"+Convert.ToString(u_residuals[1])+";"+Convert.ToString(u_residuals[2])+";"+
                             Convert.ToString(v_residuals[0])+";"+Convert.ToString(v_residuals[1])+";"+Convert.ToString(v_residuals[2])+";"+
                             Convert.ToString(w_residuals[0]) + ";" + Convert.ToString(w_residuals[1]) + ";" + Convert.ToString(w_residuals[2])+"\n");
