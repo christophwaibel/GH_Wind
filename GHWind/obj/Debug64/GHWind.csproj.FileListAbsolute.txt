@@ -6,3 +6,4 @@ c:\users\chwaibel\documents\visual studio 2015\Projects\GHWind\GHWind\bin\FastFl
 c:\users\chwaibel\documents\visual studio 2015\Projects\GHWind\GHWind\bin\FastFluidSolverMT.pdb
 c:\users\chwaibel\documents\visual studio 2015\Projects\GHWind\GHWind\obj\Debug64\GHWind.dll
 c:\users\chwaibel\documents\visual studio 2015\Projects\GHWind\GHWind\obj\Debug64\GHWind.pdb
+C:\Users\chwaibel\Documents\Visual Studio 2015\Projects\GHWind\GHWind\obj\Debug64\GHWind.csprojResolveAssemblyReference.cache
