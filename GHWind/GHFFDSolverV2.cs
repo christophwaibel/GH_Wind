@@ -20,14 +20,7 @@ namespace GHWind
 {
     public class GHFFDSolverV2 : GH_Component
     {
-        private string filepath;
 
-        private Domain omega;
-        private FluidSolver ffd;
-        private DataExtractor de;
-
-        private double t;
-        private bool resetFFD;
 
 
 
@@ -110,7 +103,7 @@ namespace GHWind
             //#4
             pManager.AddGenericParameter("DE", "DE", "Data Extractor, containing omega and FFD classes", GH_ParamAccess.item);
 
-           // pManager.AddTextParameter("VTK path", "VTK path", "Output path of VTK results file", GH_ParamAccess.item);
+            // pManager.AddTextParameter("VTK path", "VTK path", "Output path of VTK results file", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -119,6 +112,16 @@ namespace GHWind
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            string filepath;
+
+            Domain omega;
+            FluidSolver ffd;
+            DataExtractor de;
+
+            double t;
+            bool resetFFD;
+
+
             // current filepath
             filepath = Path.GetDirectoryName(this.OnPingDocument().FilePath);
             string residualstxt = filepath + @"\\residual.txt";
@@ -146,7 +149,7 @@ namespace GHWind
 
             // horizon
             double t_end = 1;
-            if(!DA.GetData(4, ref t_end)) { return; }
+            if (!DA.GetData(4, ref t_end)) { return; }
 
             // wind speed
             double Vmet = 10;
@@ -168,7 +171,7 @@ namespace GHWind
             DA.GetData(8, ref writeresults);
 
 
-            DA.GetData(10, ref resetFFD);
+            //DA.GetData(10, ref resetFFD);
 
             bool calcres = false;
             DA.GetData(12, ref calcres);
@@ -179,9 +182,9 @@ namespace GHWind
             string strparam = null;
             DA.GetData(11, ref strparam);
 
-            string[] str_params =null;
+            string[] str_params = null;
             if (strparam != null) str_params = strparam.Split(';');
-          
+
             double nu = 1.511e-5;       // increase viscosity to impose turbulence. the higher velocity, the higher visc., 1e-3
             FluidSolver.solver_struct solver_params = new FluidSolver.solver_struct();
             if (str_params != null)
@@ -227,8 +230,8 @@ namespace GHWind
 
 
             // Create FFD solver and domain
-            if (ffd == null || resetFFD)
-            {
+            //if (ffd == null || resetFFD)
+            //{
                 omega = new WindInflow(Nx + 2, Ny + 2, Nz + 2, xyzsize[0], xyzsize[1], xyzsize[2], Vmet, terrain);
                 foreach (double[] geo in geom)
                 {
@@ -239,7 +242,7 @@ namespace GHWind
                 de = new DataExtractor(omega, ffd);
                 t = 0;
 
-                if (resetFFD) resetFFD = false;            //reset FFD solver and domain
+                //if (resetFFD) resetFFD = false;            //reset FFD solver and domain
 
                 Rhino.RhinoApp.WriteLine("GRASSHOPPER FFD Air Flow Simulation.");
                 Rhino.RhinoApp.WriteLine("GH Plug-in: https://github.com/christophwaibel/GH_Wind");
@@ -247,7 +250,7 @@ namespace GHWind
                 Rhino.RhinoApp.WriteLine("________________________________________________________");
                 Rhino.RhinoApp.WriteLine("...Domain initialized");
                 Rhino.RhinoApp.WriteLine("________________________________________________________");
-            }
+            //}
 
 
 
@@ -307,11 +310,11 @@ namespace GHWind
                         Rhino.RhinoApp.WriteLine("w residuals: {0};{1};{2}", w_residuals[0], w_residuals[1], w_residuals[2]);
 
                         File.AppendAllText(residualstxt, Convert.ToString(p_residuals[0]) + ";" + Convert.ToString(p_residuals[1]) + ";" + Convert.ToString(p_residuals[2]) + ";" +
-                            Convert.ToString(u_residuals[0])+";"+Convert.ToString(u_residuals[1])+";"+Convert.ToString(u_residuals[2])+";"+
-                            Convert.ToString(v_residuals[0])+";"+Convert.ToString(v_residuals[1])+";"+Convert.ToString(v_residuals[2])+";"+
-                            Convert.ToString(w_residuals[0]) + ";" + Convert.ToString(w_residuals[1]) + ";" + Convert.ToString(w_residuals[2])+"\n");
+                            Convert.ToString(u_residuals[0]) + ";" + Convert.ToString(u_residuals[1]) + ";" + Convert.ToString(u_residuals[2]) + ";" +
+                            Convert.ToString(v_residuals[0]) + ";" + Convert.ToString(v_residuals[1]) + ";" + Convert.ToString(v_residuals[2]) + ";" +
+                            Convert.ToString(w_residuals[0]) + ";" + Convert.ToString(w_residuals[1]) + ";" + Convert.ToString(w_residuals[2]) + "\n");
                     }
- 
+
                     if (t >= t_end - m * dt)
                     {
                         ffd_old[counter] = new FluidSolver(ffd);
@@ -329,13 +332,13 @@ namespace GHWind
                 ffd_mean.w = new double[ffd.w.GetLength(0), ffd.w.GetLength(1), ffd.w.GetLength(2)];
                 for (int i = 0; i < ffd_mean.p.GetLength(0); i++)
                 {
-                    for(int j=0; j < ffd_mean.p.GetLength(1); j++)
+                    for (int j = 0; j < ffd_mean.p.GetLength(1); j++)
                     {
-                        for(int k=0; k < ffd_mean.p.GetLength(2); k++)
+                        for (int k = 0; k < ffd_mean.p.GetLength(2); k++)
                         {
-                            for (int u=0; u<counter; u++)
+                            for (int u = 0; u < counter; u++)
                             {
-                                ffd_mean.p[i, j, k] += ffd_old[u].p[i, j, k]; 
+                                ffd_mean.p[i, j, k] += ffd_old[u].p[i, j, k];
                             }
                             ffd_mean.p[i, j, k] /= counter;
                         }
@@ -392,7 +395,7 @@ namespace GHWind
             }
 
 
-  
+
 
 
 
