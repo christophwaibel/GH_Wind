@@ -22,8 +22,8 @@ namespace GHWind
         /// Initializes a new instance of the GHVisualizeCp class.
         /// </summary>
         public GHVisualizeCp()
-            : base("Cp Visualizer", "Cp Visualizer",
-                            "Dynamic Cp visualizer for the FFD solver. Draws and updates Cp values on surfaces at every timestep.",
+            : base("Srf P Visualizer", "Srf P Visualizer",
+                            "Dynamic surface pressure visualizer for the FFD solver. Draws surface pressure values at every timestep. Either Cp (pressure coefficients) or in [Pa].",
                             "EnergyHubs", "Wind Simulation")
         {
         }
@@ -39,7 +39,7 @@ namespace GHWind
 
             pManager.AddGenericParameter("DE", "DE", "data extractor, from FFD solver", GH_ParamAccess.item);
 
-            pManager.AddNumberParameter("ρ", "ρ", "air density in [kg/m^3]. Default is 1.2041", GH_ParamAccess.item);
+            pManager.AddNumberParameter("ρ", "ρ", "Air density in [kg/m^3]. Default is 1.2041.", GH_ParamAccess.item);
             pManager[3].Optional = true;
 
             pManager.AddNumberParameter("min", "min", "min for colour scale. default is -1", GH_ParamAccess.item);
@@ -54,6 +54,9 @@ namespace GHWind
             pManager[7].Optional = true;
 
             pManager.AddPointParameter("ref z", "ref z", "reference height. usually should be the building height. Make sure, the point is somehow in the Y-middle of the domain. Point3d", GH_ParamAccess.item);
+
+            pManager.AddBooleanParameter("Cp?", "Cp?", "Display Cp (pressure coefficients) instead of dynamic surface pressure in [Pa]? Default is true.", GH_ParamAccess.item);
+            pManager[9].Optional = true;
         }
 
         /// <summary>
@@ -61,11 +64,11 @@ namespace GHWind
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddMeshParameter("CpMesh", "CpMesh", "Coloured Mesh with Cp values", GH_ParamAccess.item);
+            pManager.AddMeshParameter("CpMesh", "CpMesh", "Coloured Mesh with surface pressure values. Cp or in [Pa].", GH_ParamAccess.item);
 
             pManager.AddCurveParameter("txt", "txt", "txt", GH_ParamAccess.list);
 
-            pManager.AddGenericParameter("Cps", "Cps", "Cp values as numbers", GH_ParamAccess.tree);
+            pManager.AddGenericParameter("Cps", "Cps", "Cp or [Pa] values as numbers", GH_ParamAccess.tree);
         }
 
         /// <summary>
@@ -83,8 +86,8 @@ namespace GHWind
             DataExtractor de = null;
             if (!DA.GetData(2, ref de)) { return; }
 
-            double roh = 1.2041;
-            DA.GetData(3, ref roh);
+            double rho = 1.2041;
+            DA.GetData(3, ref rho);
 
             double min = -1;
             double max = 1;
@@ -100,6 +103,10 @@ namespace GHWind
             Point3d zrefp = new Point3d();
             if (!DA.GetData(8, ref zrefp)) { return; }
 
+            bool boolCp = true;
+            DA.GetData(9, ref boolCp);
+
+
             string face = "Baskerville";
             bool bold = false;
             bool italics = true;
@@ -114,7 +121,7 @@ namespace GHWind
             Vector3d vrefv = new Vector3d(vref[0], vref[1], vref[2]);
             double vrefl = vrefv.Length;
             double pref = de.get_pressure(0, zrefp[1] - origin[1], zrefp[2] - origin[2]);
-            double pdyn = 0.5 * roh * Math.Pow(vrefl, 2);
+            double pdyn = 0.5 * rho * Math.Pow(vrefl, 2);
 
             foreach (Mesh msh in mshCp)
             {
@@ -132,8 +139,9 @@ namespace GHWind
                     //double pdyn = 0.5 * roh * Math.Pow(vrefl, 2);
                     double px = de.get_pressure(msh.Vertices[u].X - origin[0], msh.Vertices[u].Y - origin[1], msh.Vertices[u].Z - origin[2]);
 
+                    if (boolCp) Cp[u] = (px - pref) / pdyn;
+                    else Cp[u] = (px - pref) * rho;
 
-                    Cp[u] = (px - pref) / pdyn;
                     cptree.Add(Cp[u], new Grasshopper.Kernel.Data.GH_Path(branch));
                     Cols[u] = Utilities.GetRGB(colourSheme, Cp[u], max, min);
                     mshcol.Vertices.Add(msh.Vertices[u]);
