@@ -67,7 +67,7 @@ namespace GHWind
             pManager[8].Optional = true;
 
             //#9
-            pManager.AddBooleanParameter("Export VTK", "ExpVTK", "Export Results to VTK", GH_ParamAccess.item);
+            pManager.AddBooleanParameter("Export VTK", "ExpVTK", "Export Results to VTK. Also writes VTK geometry file.", GH_ParamAccess.item);
             pManager[9].Optional = true;
 
             //#10
@@ -117,7 +117,7 @@ namespace GHWind
             Domain omega;
             FluidSolver ffd;
             DataExtractor de;
-
+            
             double t;
             bool resetFFD;
 
@@ -125,6 +125,7 @@ namespace GHWind
             // current filepath
             filepath = Path.GetDirectoryName(this.OnPingDocument().FilePath);
             string residualstxt = filepath + @"\\residual.txt";
+            
 
             // *********************************************************************************
             // Inputs
@@ -169,6 +170,9 @@ namespace GHWind
             //DA.GetDataList(10, mshCp);
             bool writeresults = false;
             DA.GetData(8, ref writeresults);
+
+            bool writeVTK = false;
+            DA.GetData(9, ref writeVTK);
 
 
             //DA.GetData(10, ref resetFFD);
@@ -242,9 +246,11 @@ namespace GHWind
                 de = new DataExtractor(omega, ffd);
                 t = 0;
 
-                //if (resetFFD) resetFFD = false;            //reset FFD solver and domain
+            PostProcessor pp = new PostProcessor(ffd, omega);
 
-                Rhino.RhinoApp.WriteLine("GRASSHOPPER FFD Air Flow Simulation.");
+            //if (resetFFD) resetFFD = false;            //reset FFD solver and domain
+
+            Rhino.RhinoApp.WriteLine("GRASSHOPPER FFD Air Flow Simulation.");
                 Rhino.RhinoApp.WriteLine("GH Plug-in: https://github.com/christophwaibel/GH_Wind");
                 Rhino.RhinoApp.WriteLine("FFD Solver: https://github.com/lukasbystricky/GSoC_FFD");
                 Rhino.RhinoApp.WriteLine("________________________________________________________");
@@ -272,10 +278,14 @@ namespace GHWind
             //!!!!!!!!!!!!!!! CHANGE
             if (run)
             {
+                if (writeVTK) pp.export_geometry_vtk(filepath + @"\\vtk_geometry.vtk", 0);
+
                 int counter = 0;
+                int timestep = 0;
                 FluidSolver[] ffd_old = new FluidSolver[m];
 
                 if (calcres) File.AppendAllText(residualstxt, "pmin; pmax; pavg; umin; umax; uavg; vmin; vmax; vavg; wmin; wmax; wavg;\n");
+
                 while (t < t_end)
                 {
                     Rhino.RhinoApp.WriteLine(Convert.ToString(t) + " of " + Convert.ToString(t_end));
@@ -320,8 +330,9 @@ namespace GHWind
                         ffd_old[counter] = new FluidSolver(ffd);
                         counter++;
                     }
-
+                    if (writeVTK) pp.export_data_vtk(filepath + @"\\vtk_" + timestep + ".vtk", t, false);
                     t += dt;
+                    timestep++;
                 }
 
                 //averaging results 
