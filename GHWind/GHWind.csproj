@@ -66,6 +66,7 @@
     <Compile Include="GHFFDSolverAytac.cs" />
     <Compile Include="GHFFDSolverV2.cs" />
     <Compile Include="GHFFDSolverWentao.cs" />
+    <Compile Include="GHPrintCellValues.cs" />
     <Compile Include="GHVisualizeCp.cs" />
     <Compile Include="GHVisualizerField.cs" />
     <Compile Include="GHVisualizerVectors.cs" />
