@@ -100,6 +100,8 @@ namespace GHWind
             pManager.AddGenericParameter("v staggered", "v staggered", "velocities, on staggered grid", GH_ParamAccess.list);
             pManager.AddGenericParameter("p staggered", "p staggered", "pressure, on staggered grid", GH_ParamAccess.item);
 
+            //#4
+            pManager.AddGenericParameter("DE", "DE", "Data Extractor, containing omega and FFD classes", GH_ParamAccess.item);
             //#5
             pManager.AddGenericParameter("obst domain", "obst domain", "Boolean array indicating obstacle cell (1) or fluid cell (0) of the entire domain.", GH_ParamAccess.item);
 
@@ -534,9 +536,9 @@ namespace GHWind
                 DA.SetData(1, p);
                 DA.SetDataList(2, veloutStag);
                 DA.SetData(3, pstag);
+                DA.SetData(4, de);
 
-                
-                DA.SetData(4, omega.obstacle_cells);
+                DA.SetData(5, omega.obstacle_cells);
             }
         }
 
