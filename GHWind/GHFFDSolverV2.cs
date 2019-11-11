@@ -20,10 +20,6 @@ namespace GHWind
 {
     public class GHFFDSolverV2 : GH_Component
     {
-
-
-
-
         /// <summary>
         /// Initializes a new instance of the GHFFDSolverV2 class.
         /// </summary>
@@ -57,7 +53,7 @@ namespace GHWind
             pManager.AddNumberParameter("Wind Speed", "Vmet", "Wind Speed [m/s] at meteorological station at 10 m height above ground.", GH_ParamAccess.item);
 
             //#6
-            pManager.AddIntegerParameter("Terrain", "Terrain", "Terrain coefficients for wind speed. 0 = Ocean; 1 = Flat, open country; 2 = Rough, wooded country, urban, industrial, forest; 3 = Towns and Cities.", GH_ParamAccess.item);
+            pManager.AddIntegerParameter("Terrain/Mode", "Terrain/Mode", "Terrain coefficients for wind speed. 0 = Ocean; 1 = Flat, open country; 2 = Rough, wooded country, urban, industrial, forest; 3 = Towns and Cities. Or OpenFoam profile = 4.", GH_ParamAccess.item);
 
             //#7
             pManager.AddBooleanParameter("Run?", "Run?", "Run the solver. (Loop via Grasshopper timer component)", GH_ParamAccess.item);
@@ -75,7 +71,7 @@ namespace GHWind
             pManager[10].Optional = true;
 
             //#11
-            pManager.AddTextParameter("Solver Parameters", "params", "FFD solver parameters. Provide a semicolon-separated string, e.g. '1.511e-5;1e-4;1;30;2;false;0.7;false'. Items: 'kinematic viscosity (double); tolerance (double); min_iter (int); max_iter (int); backtrace_order (int, 1 or 2); mass_correction (true or false); mass_corr_alpha (double), verbose (true or false).", GH_ParamAccess.item);
+            pManager.AddTextParameter("Solver Parameters", "params", "FFD solver parameters. Provide a semicolon-separated string, e.g. '1.511e-5;1e-4;1;30;2;false;0.7;false;0.1'. Items: 'kinematic viscosity (double); tolerance (double); min_iter (int); max_iter (int); backtrace_order (int, 1 or 2); mass_correction (true or false); mass_corr_alpha (double), verbose (true or false); surface roughness height [m], only if terrain/mode = 4 (OpenFoam ABL function).", GH_ParamAccess.item);
             pManager[11].Optional = true;
 
             //#12
@@ -119,7 +115,7 @@ namespace GHWind
             Domain omega;
             FluidSolver ffd;
             DataExtractor de;
-            
+
             double t;
             bool resetFFD;
 
@@ -127,7 +123,7 @@ namespace GHWind
             // current filepath
             filepath = Path.GetDirectoryName(this.OnPingDocument().FilePath);
             string residualstxt = filepath + @"\\residual.txt";
-            
+
 
             // *********************************************************************************
             // Inputs
@@ -193,6 +189,7 @@ namespace GHWind
 
             double nu = 1.511e-5;       // increase viscosity to impose turbulence. the higher velocity, the higher visc., 1e-3
             FluidSolver.solver_struct solver_params = new FluidSolver.solver_struct();
+            double z0;
             if (str_params != null)
             {
                 nu = Convert.ToDouble(str_params[0]);
@@ -203,6 +200,7 @@ namespace GHWind
                 solver_params.mass_correction = str_params[5].Equals("false") ? false : true;
                 solver_params.mass_corr_alpha = Convert.ToDouble(str_params[6]);
                 solver_params.verbose = str_params[7].Equals("false") ? false : true;
+                z0 = Convert.ToDouble(str_params[8]);
             }
             else
             {
@@ -213,6 +211,7 @@ namespace GHWind
                 solver_params.mass_correction = false;
                 solver_params.mass_corr_alpha = 0.7;
                 solver_params.verbose = false;
+                z0 = 0.1;
             }
 
 
@@ -238,26 +237,33 @@ namespace GHWind
             // Create FFD solver and domain
             //if (ffd == null || resetFFD)
             //{
+            if (terrain == 4)
+            {
+                omega = new WindInflowOpenFoam(Nx + 2, Ny + 2, Nz + 2, xyzsize[0], xyzsize[1], xyzsize[2], Vmet, z0);
+            }
+            else
+            {
                 omega = new WindInflow(Nx + 2, Ny + 2, Nz + 2, xyzsize[0], xyzsize[1], xyzsize[2], Vmet, terrain);
-                foreach (double[] geo in geom)
-                {
-                    omega.add_obstacle(geo[0], geo[1], geo[2], geo[3], geo[4], geo[5]);
-                }
+            }
+            foreach (double[] geo in geom)
+            {
+                omega.add_obstacle(geo[0], geo[1], geo[2], geo[3], geo[4], geo[5]);
+            }
 
-                ffd = new FluidSolver(omega, dt, nu, u0, v0, w0, solver_params);
-                de = new DataExtractor(omega, ffd);
-                t = 0;
+            ffd = new FluidSolver(omega, dt, nu, u0, v0, w0, solver_params);
+            de = new DataExtractor(omega, ffd);
+            t = 0;
 
             PostProcessor pp = new PostProcessor(ffd, omega);
 
             //if (resetFFD) resetFFD = false;            //reset FFD solver and domain
 
             Rhino.RhinoApp.WriteLine("GRASSHOPPER FFD Air Flow Simulation.");
-                Rhino.RhinoApp.WriteLine("GH Plug-in: https://github.com/christophwaibel/GH_Wind");
-                Rhino.RhinoApp.WriteLine("FFD Solver: https://github.com/lukasbystricky/GSoC_FFD");
-                Rhino.RhinoApp.WriteLine("________________________________________________________");
-                Rhino.RhinoApp.WriteLine("...Domain initialized");
-                Rhino.RhinoApp.WriteLine("________________________________________________________");
+            Rhino.RhinoApp.WriteLine("GH Plug-in: https://github.com/christophwaibel/GH_Wind");
+            Rhino.RhinoApp.WriteLine("FFD Solver: https://github.com/lukasbystricky/GSoC_FFD");
+            Rhino.RhinoApp.WriteLine("________________________________________________________");
+            Rhino.RhinoApp.WriteLine("...Domain initialized");
+            Rhino.RhinoApp.WriteLine("________________________________________________________");
             //}
 
 
@@ -530,7 +536,7 @@ namespace GHWind
                 veloutStag.Add(vvstag);
                 veloutStag.Add(vwstag);
 
-                
+
 
                 DA.SetDataList(0, veloutCen);
                 DA.SetData(1, p);

@@ -24,8 +24,6 @@ namespace GHWind
     //}
 
 
-   
-
     /// <summary>
     /// Domain with an exponential wind profile on the inflow (x = 0), 
     /// 0 velocity on the ground (z = 0) and all other boundaries marked as outflow.
@@ -170,6 +168,127 @@ namespace GHWind
             boundary_w = old.boundary_w;
         }
     }
+
+
+    public class WindInflowOpenFoam : Domain
+    {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="Nx">Number of cells (including ghost cells) in x direction</param>
+        /// <param name="Ny">Number of cells (including ghost cells) in x direction</param>
+        /// <param name="Nz">Number of cells (including ghost cells) in x direction</param>
+        /// <param name="length_x">Length of domain in x direction (not including ghost cells)</param>
+        /// <param name="length_y">Length of domain in y direction (not including ghost cells)</param>
+        /// <param name="length_z">Length of domain in z direction (not including ghost cells)</param>
+        /// <param name="Uref">Reference velocity at 10m height [m/s]</param>
+        /// <param name="z0">Surface roughness height [m]</param>
+        public WindInflowOpenFoam(int Nx, int Ny, int Nz, double length_x, double length_y, double length_z,
+            double Uref, double z0)
+        {
+            this.Nx = Nx;
+            this.Ny = Ny;
+            this.Nz = Nz;
+
+            this.length_x = length_x;
+            this.length_y = length_y;
+            this.length_z = length_z;
+
+            hx = length_x / (Nx - 2);
+            hy = length_y / (Ny - 2);
+            hz = length_z / (Nz - 2);
+
+            boundary_cells = new int[Nx, Ny, Nz];
+            obstacle_cells = new int[Nx, Ny, Nz];
+            boundary_normal_x = new int[Nx, Ny, Nz];
+            boundary_normal_y = new int[Nx, Ny, Nz];
+            boundary_normal_z = new int[Nx, Ny, Nz];
+            boundary_u = new double[Nx - 1, Ny, Nz];
+            boundary_v = new double[Nx, Ny - 1, Nz];
+            boundary_w = new double[Nx, Ny, Nz - 1];
+
+            outflow_boundary_x = new int[Nx, Ny, Nz];
+            outflow_boundary_y = new int[Nx, Ny, Nz];
+            outflow_boundary_z = new int[Nx, Ny, Nz];
+
+            //x outflow
+            Parallel.For(1, Ny - 1, j =>
+            {
+                for (int k = 1; k < Nz - 1; k++)
+                {
+                    outflow_boundary_x[Nx - 2, j, k] = 1;
+                }
+            });
+
+            //y outflows
+            Parallel.For(1, Nx - 1, i =>
+            {
+                for (int k = 1; k < Nz - 1; k++)
+                {
+                    outflow_boundary_y[i, 1, k] = 1;
+                    outflow_boundary_y[i, Ny - 2, k] = 1;
+                }
+            });
+
+            //z outflow
+            Parallel.For(1, Nx - 1, i =>
+            {
+                for (int j = 1; j < Ny - 1; j++)
+                {
+                    outflow_boundary_z[i, j, Nz - 2] = 1;
+                }
+            });
+
+
+            // https://www.openfoam.com/documentation/guides/latest/api/classFoam_1_1atmBoundaryLayer.html#details
+            const double kappa = 0.41;  // von Karman's constant
+            const double Zref = 10.0;         // Reference height [m]
+            const double zg = 0.0;            // Minimum z-coordinate [m]
+            double Ustar = kappa * (Uref / (Math.Log((Zref + z0) / z0)));   // Friction velocity
+
+            //x = 0, inflow
+            Parallel.For(0, boundary_u.GetLength(1), j =>
+            {
+                for (int k = 0; k < boundary_u.GetLength(2); k++)
+                {
+                    double z = (k - 0.5) * hz;
+                    boundary_u[0, j, k] = (Ustar / kappa) * Math.Max(Math.Log(Math.Max((z - zg + z0) / z0, 0)), 0);
+                }
+            });
+
+            set_ghost_flags();
+            set_boundary_flags();
+        }
+
+        /// <summary>
+        /// Copy constructor
+        /// </summary>
+        public WindInflowOpenFoam(WindInflow old)
+        {
+            Nx = old.Nx;
+            Ny = old.Ny;
+            Nz = old.Nz;
+
+            hx = old.hx;
+            hy = old.hy;
+            hz = old.hz;
+
+            length_x = old.length_x;
+            length_y = old.length_y;
+            length_z = old.length_z;
+
+            boundary_cells = old.boundary_cells;
+            obstacle_cells = old.obstacle_cells;
+            boundary_normal_x = old.boundary_normal_x;
+            boundary_normal_y = old.boundary_normal_y;
+            boundary_normal_z = old.boundary_normal_z;
+            boundary_u = old.boundary_u;
+            boundary_v = old.boundary_v;
+            boundary_w = old.boundary_w;
+        }
+    }
+
+
 
     public class WindInflowAytac : Domain
     {
@@ -423,6 +542,7 @@ namespace GHWind
         }
     }
 
+
     /// <summary>
     /// Domain for the lid driven cavity
     /// </summary>
@@ -509,7 +629,6 @@ namespace GHWind
             outflow_boundary_z = old.outflow_boundary_z;
         }
     }   
-
 
 
     public class DomainOpen : Domain
@@ -646,5 +765,4 @@ namespace GHWind
         }
 
     }
-
 }
