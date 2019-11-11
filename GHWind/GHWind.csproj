@@ -34,8 +34,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FastFluidSolverMT">
-      <HintPath>..\..\GSoC_FFD-multi\FastFluidSolverMT\bin\Debug\FastFluidSolverMT.dll</HintPath>
+    <Reference Include="FastFluidSolverMT, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\GSoC_FFD\FastFluidSolverMT\bin\Debug\FastFluidSolverMT.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

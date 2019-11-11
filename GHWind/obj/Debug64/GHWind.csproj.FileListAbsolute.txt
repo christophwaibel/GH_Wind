@@ -7,3 +7,14 @@ c:\users\chwaibel\documents\visual studio 2015\Projects\GHWind\GHWind\bin\FastFl
 c:\users\chwaibel\documents\visual studio 2015\Projects\GHWind\GHWind\obj\Debug64\GHWind.dll
 c:\users\chwaibel\documents\visual studio 2015\Projects\GHWind\GHWind\obj\Debug64\GHWind.pdb
 C:\Users\chwaibel\Documents\Visual Studio 2015\Projects\GHWind\GHWind\obj\Debug64\GHWind.csprojResolveAssemblyReference.cache
+C:\Users\Christoph\Documents\GitHub\GH_Wind\GHWind\bin\GHWind.dll
+C:\Users\Christoph\Documents\GitHub\GH_Wind\GHWind\bin\GHWind.pdb
+C:\Users\Christoph\Documents\GitHub\GH_Wind\GHWind\bin\FastFluidSolverMT.dll
+C:\Users\Christoph\Documents\GitHub\GH_Wind\GHWind\bin\FastFluidSolverMT.pdb
+C:\Users\Christoph\Documents\GitHub\GH_Wind\GHWind\bin\FastFluidSolverMT.dll.config
+C:\Users\Christoph\Documents\GitHub\GH_Wind\GHWind\obj\Debug64\GHWind.csprojAssemblyReference.cache
+C:\Users\Christoph\Documents\GitHub\GH_Wind\GHWind\obj\Debug64\GHWind.Properties.Resources.resources
+C:\Users\Christoph\Documents\GitHub\GH_Wind\GHWind\obj\Debug64\GHWind.csproj.GenerateResource.cache
+C:\Users\Christoph\Documents\GitHub\GH_Wind\GHWind\obj\Debug64\GHWind.csproj.CopyComplete
+C:\Users\Christoph\Documents\GitHub\GH_Wind\GHWind\obj\Debug64\GHWind.dll
+C:\Users\Christoph\Documents\GitHub\GH_Wind\GHWind\obj\Debug64\GHWind.pdb
