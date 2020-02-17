@@ -49,6 +49,9 @@ namespace GHWind
 
             pManager.AddIntegerParameter("colour sheme", "colours", "Colour sheme. 0: Blue (min) - Red - Yellow (max); 1: Blue (min) - Green - Red (max); 2: Black only.", GH_ParamAccess.item);
             pManager[11].Optional = true;
+
+            pManager.AddTextParameter("path_filename", "path_filename", "Path and filename of csv file to be written for this 2D output. But without .csv ending. Like this is good: 'c:\test\result'.", GH_ParamAccess.item);
+            pManager[12].Optional = true;
         }
 
         /// <summary>
@@ -103,7 +106,8 @@ namespace GHWind
             int colourSheme = 0;
             DA.GetData(11, ref colourSheme);
 
-
+            string output_path = null;
+            DA.GetData(12, ref output_path);
 
             //min max pressure values
             double minp = double.MaxValue;
@@ -121,11 +125,14 @@ namespace GHWind
             }
 
 
-
             Point3f[][] MVert = new Point3f[vu.GetLength(0)][];
             Color[][] Cols = new Color[vu.GetLength(0)][];
             int[][] index = new int[vu.GetLength(0)][];
             int counter = 0;
+            double[,] output_vu = new double[1,1];
+            double[,] output_vv = new double[1, 1];
+            double[,] output_vw = new double[1, 1];
+            double[,] output_p = new double[1, 1];
 
             Mesh MshColSection = new Mesh();
             switch (xyz)
@@ -136,13 +143,24 @@ namespace GHWind
                     //4---5---6---7
                     //| x | x | x |
                     //0---1---2---3
-                    //
+                    //               
                     //- loop through and get colours for all vertices
                     //- make vertices as point3d
                     MVert = new Point3f[vu.GetLength(1)][];
                     Cols = new Color[vu.GetLength(1)][];
                     index = new int[vu.GetLength(1)][];
                     counter = 0;
+
+                    if (dispP)
+                    {
+                        output_p = new double[vu.GetLength(1), vu.GetLength(2)];
+                    }
+                    else
+                    {
+                        output_vu = new double[vu.GetLength(1), vu.GetLength(2)];
+                        output_vv = new double[vu.GetLength(1), vu.GetLength(2)];
+                        output_vw = new double[vu.GetLength(1), vu.GetLength(2)];
+                    }
 
                     for (int j = 0; j < vu.GetLength(1); j++)
                     {
@@ -167,12 +185,16 @@ namespace GHWind
                                 //low = 0;
                                 //top = maxp + Math.Abs(minp);
                                 //third = (top - low) / 5;
+                                output_p[j, k] = quantity;
                             }
                             else
                             {
                                 Line arrowlines = new Line(new Point3d(sectionheight * hx + origin[0], j * hy + origin[1], k * hz + origin[2]),
                                         new Vector3d(vu[sectionheight, j, k], vv[sectionheight, j, k], vw[sectionheight, j, k]));
                                 quantity = arrowlines.Length;
+                                output_vu[j, k] = vu[sectionheight, j, k];
+                                output_vv[j, k] = vv[sectionheight, j, k];
+                                output_vw[j, k] = vw[sectionheight, j, k];
                             }
 
 
@@ -193,12 +215,23 @@ namespace GHWind
                     break;
 
                 case 1: //y
-                    //8---9---10--11
-                    //| x | x | x |
-                    //4---5---6---7
-                    //| x | x | x |
-                    //0---1---2---3
-                    //
+                        //8---9---10--11
+                        //| x | x | x |
+                        //4---5---6---7
+                        //| x | x | x |
+                        //0---1---2---3
+                        //
+                    if (dispP)
+                    {
+                        output_p = new double[vu.GetLength(0), vu.GetLength(2)];
+                    }
+                    else
+                    {
+                        output_vu = new double[vu.GetLength(0), vu.GetLength(2)];
+                        output_vv = new double[vu.GetLength(0), vu.GetLength(2)];
+                        output_vw = new double[vu.GetLength(0), vu.GetLength(2)];
+                    }
+
                     //- loop through and get colours for all vertices
                     //- make vertices as point3d
                     MVert = new Point3f[vu.GetLength(0)][];
@@ -229,12 +262,16 @@ namespace GHWind
                                 //low = 0;
                                 //top = maxp + Math.Abs(minp);
                                 //third = (top - low) / 5;
+                                output_p[i, k] = quantity;
                             }
                             else
                             {
                                 Line arrowlines = new Line(new Point3d(i * hx + origin[0], sectionheight * hy + origin[1], k * hz + origin[2]),
                                         new Vector3d(vu[i, sectionheight, k], vv[i, sectionheight, k], vw[i, sectionheight, k]));
                                 quantity = arrowlines.Length;
+                                output_vu[i, k] = vu[i, sectionheight, k];
+                                output_vv[i, k] = vv[i, sectionheight, k];
+                                output_vw[i, k] = vw[i, sectionheight, k];
                             }
 
 
@@ -255,15 +292,26 @@ namespace GHWind
                     break;
 
                 case 2: //z
-                    //8---9---10--11
-                    //| x | x | x |
-                    //4---5---6---7
-                    //| x | x | x |
-                    //0---1---2---3
-                    //
+                        //8---9---10--11
+                        //| x | x | x |
+                        //4---5---6---7
+                        //| x | x | x |
+                        //0---1---2---3
+                        //
+                    if (dispP)
+                    {
+                        output_p = new double[vu.GetLength(0), vu.GetLength(1)];
+                    }
+                    else
+                    {
+                        output_vu = new double[vu.GetLength(0), vu.GetLength(1)];
+                        output_vv = new double[vu.GetLength(0), vu.GetLength(1)];
+                        output_vw = new double[vu.GetLength(0), vu.GetLength(1)];
+                    }
+
                     //- loop through and get colours for all vertices
                     //- make vertices as point3d
-                     MVert = new Point3f[vu.GetLength(0)][];
+                    MVert = new Point3f[vu.GetLength(0)][];
                     Cols = new Color[vu.GetLength(0)][];
                     index = new int[vu.GetLength(0)][];
                     counter = 0;
@@ -292,12 +340,16 @@ namespace GHWind
                                 //low = 0;
                                 //top = maxp + Math.Abs(minp);
                                 //third = (top - low) / 5;
+                                output_p[i, j] = quantity;
                             }
                             else
                             {
                                 Line arrowlines = new Line(new Point3d(i * hx + origin[0], j * hy + origin[1], sectionheight * hz + origin[2]),
                                         new Vector3d(vu[i, j, sectionheight], vv[i, j, sectionheight], vw[i, j, sectionheight]));
                                 quantity = arrowlines.Length;
+                                output_vu[i, j] = vu[i, j, sectionheight];
+                                output_vv[i, j] = vv[i, j, sectionheight];
+                                output_vw[i, j] = vw[i, j, sectionheight];
                             }
 
 
@@ -321,6 +373,26 @@ namespace GHWind
             
 
             DA.SetData(0, MshColSection);
+
+
+
+
+
+            if (output_path != null)
+            {
+                if (dispP)
+                {
+                    // add 'p' to filepath
+                    Utilities.WriteCSV(String.Concat(output_path, "_P.csv"), output_p);
+                }
+                else
+                {
+                    //add 'vu', 'vv', 'vw' to filepath
+                    Utilities.WriteCSV(String.Concat(output_path, "_U.csv"), output_vu);
+                    Utilities.WriteCSV(String.Concat(output_path, "_V.csv"), output_vv);
+                    Utilities.WriteCSV(String.Concat(output_path, "_W.csv"), output_vw);
+                }
+            }
 
         }
 

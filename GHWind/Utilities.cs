@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
+using System.IO;
 
 
 /*
@@ -96,6 +94,33 @@ namespace GHWind
             else if (BB < 0) BB = 0;
             return Color.FromArgb((int)RR, (int)GG, (int)BB);
 
+        }
+
+
+        /// <summary>
+        /// Writes a csv file to the specified path
+        /// </summary>
+        /// <param name="full_path">Full path including filename, e.g. 'C:\results.csv'</param>
+        /// <param name="output_data">output data</param>
+        public static void WriteCSV(string full_path, double [,] output_data)
+        {
+            string[] lines;
+            var list = new List<string>();
+
+            int rows = output_data.GetLength(0);
+            int columns = output_data.GetLength(1);
+
+            for (int i=0; i<rows; i++)
+            {
+                string line = output_data[i, 0].ToString();
+                for(int u=1; u<columns; u++)
+                {
+                    line = String.Concat(line, "," + output_data[i, u].ToString());
+                }
+                list.Add(line);
+            }
+            lines = list.ToArray();
+            File.WriteAllLines(full_path, lines);
         }
 
     }
