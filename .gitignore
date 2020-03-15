@@ -1,7 +1,9 @@
 
-.vs/GHWind/v16/.suo
-.vs/GHWind/v16/Server/sqlite3/storage.ide
-.vs/GHWind/v16/Server/sqlite3/storage.ide-shm
-.vs/GHWind/v16/Server/sqlite3/storage.ide-wal
-.vs/GHWind/v16/.suo
-.vs/GHWind/v16/Server/sqlite3/storage.ide
+*.ide
+*.ide-shm
+*.ide-wal
+
+GHWind/bin
+GHWind/obj
+
+/.vs
