@@ -11,11 +11,11 @@ Try out the *.gh and *.3dm files in the [Tutorials](https://github.com/christoph
 
 <br><br>
 
-![alt text](https://github.com/christophwaibel/GH_Wind/blob/master/slide0005_image017.gif "Image from Rhino")
+![alt text](https://github.com/christophwaibel/GH_Wind/blob/master/Documentation/slide0005_image017.gif "Image from Rhino")
 
 *Capture from Rhino. Serves only as an illustrative example, don't make such a small domain in your simulations!*
 
 
-![alt text](https://github.com/christophwaibel/GH_Wind/blob/master/image23.gif "Image from Rhino")
+![alt text](https://github.com/christophwaibel/GH_Wind/blob/master/Documentation/image23.gif "Image from Rhino")
 
 *Capture from Rhino, 50x50x40 mesh, 10 times speed up*
