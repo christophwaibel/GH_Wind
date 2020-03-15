@@ -1,8 +1,0 @@
-c:\users\chwaibel\documents\visual studio 2015\Projects\GHWind\GHWind\bin\FastFluidSolverMT.dll
-C:\Users\chwaibel\Documents\Visual Studio 2015\Projects\GHWind\GHWind\bin\FastFluidSolverMT.pdb
-C:\Users\chwaibel\Documents\Visual Studio 2015\Projects\GHWind\GHWind\obj\Debug\GHWind.Properties.Resources.resources
-C:\Users\chwaibel\Documents\Visual Studio 2015\Projects\GHWind\GHWind\obj\Debug\GHWind.csproj.GenerateResource.Cache
-C:\Users\chwaibel\Documents\Visual Studio 2015\Projects\GHWind\GHWind\obj\Debug\GHWind.dll
-C:\Users\chwaibel\Documents\Visual Studio 2015\Projects\GHWind\GHWind\obj\Debug\GHWind.pdb
-C:\Users\chwaibel\Documents\Visual Studio 2015\Projects\GHWind\GHWind\bin\GHWind.dll
-C:\Users\chwaibel\Documents\Visual Studio 2015\Projects\GHWind\GHWind\bin\GHWind.pdb
