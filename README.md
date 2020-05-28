@@ -1,7 +1,7 @@
 # GH_Wind
 Wind Simulation (FFD) plugin for Rhinoceros Grasshopper.
 
-Please refer to this publication for citation: [Waibel et al. (2017)](http://www.ibpsa.org/proceedings/BS2017/BS2017_582.pdf)
+Please refer to this publication for citation: [Waibel et al. (2017)](http://www.ibpsa.org/proceedings/BS2017/BS2017_582.pdf). It also includes validation and comparison studies with OpenFOAM and wind tunnel experiments.
 
 <br><br>
 
