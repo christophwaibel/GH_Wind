@@ -1,7 +1,7 @@
 # GH_Wind
 Wind Simulation (FFD) plugin for Rhinoceros Grasshopper.
 
-Please refer to this publication for citation: [Waibel et al. (2017). Validation of Grasshopper-based Fast Fluid Dynamics for Air Flow around Buildings in Early Design Stage. In: IBPSA 2017 San Francisco.](https://doi.org/10.26868/25222708.2017.582). It also includes validation and comparison studies with OpenFOAM and wind tunnel experiments.
+Please refer to this publication for citation: [Waibel et al. (2017). Validation of Grasshopper-based Fast Fluid Dynamics for Air Flow around Buildings in Early Design Stage. In: IBPSA 2017 San Francisco](https://doi.org/10.26868/25222708.2017.582). It also includes validation and comparison studies with OpenFOAM and wind tunnel experiments.
 
 <br><br>
 
